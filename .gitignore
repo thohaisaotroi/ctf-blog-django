@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*.pyo
 *$py.class
 
 # Django
@@ -24,9 +25,14 @@ Thumbs.db
 .idea/
 .claude/
 
-# Environment
+# Environment & secrets
 .env
+.env.*
 venv/
 env/
-*.tar.gz
+
+# Database init — chứa credentials, không commit
 init.sql
+
+# sqlmap output
+/tmp/sqlmap_ctf_dump/
