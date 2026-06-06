@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}About — NEURAL_FEED{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>ABOUT US</h1>
+  <div class="breadcrumb">
+    <a href="/">Home</a> <i class="fas fa-arrow-right fa-xs"></i> <span>About</span>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="two-col-grid">
+      <div>
+        <span class="tag tag-purple mb-16" style="display:inline-block;margin-bottom:16px;">Our Mission</span>
+        <h2 style="margin-bottom:24px;">WE FEED YOUR<br>CURIOSITY, RAW.</h2>
+        <p style="margin-bottom:20px;">
+          NEURAL_FEED is an independent knowledge platform focused on cybersecurity, web development, and tech education. We believe in unfiltered, practical content — the kind that actually prepares you for the real world.
+        </p>
+        <p style="margin-bottom:20px;">
+          From SQL injection deep-dives to career growth guides, every post here is crafted to give you real, applicable knowledge — not buzzword soup.
+        </p>
+        <p>
+          Whether you're a developer hardening your app, a security researcher, or just someone who's curious — this feed is for you.
+        </p>
+        <div style="margin-top:36px;display:flex;gap:14px;">
+          <a href="/blog/" class="btn btn-yellow">Read the Blog</a>
+          <a href="/contact/" class="btn btn-outline">Get in Touch</a>
+        </div>
+      </div>
+
+      <div style="background:var(--purple);border:var(--border3);border-radius:var(--radius);box-shadow:var(--shadow6);padding:48px;text-align:center;">
+        <i class="fas fa-bolt" style="font-size:5rem;margin-bottom:24px;display:block;"></i>
+        <h3 style="margin-bottom:12px;">NEURAL_FEED</h3>
+        <p style="color:#444;font-size:0.95rem;">Knowledge, unfiltered.</p>
+      </div>
+    </div><!-- /.two-col-grid -->
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="section-sm" style="background:var(--black);border-top:var(--border3);border-bottom:var(--border3);">
+  <div class="container">
+    <div class="about-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center;">
+      <div>
+        <span style="font-family:'Archivo Black',sans-serif;font-size:3rem;color:var(--yellow);display:block;">50+</span>
+        <span style="color:#aaa;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;">Articles Published</span>
+      </div>
+      <div>
+        <span style="font-family:'Archivo Black',sans-serif;font-size:3rem;color:var(--yellow);display:block;">10K+</span>
+        <span style="color:#aaa;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;">Monthly Readers</span>
+      </div>
+      <div>
+        <span style="font-family:'Archivo Black',sans-serif;font-size:3rem;color:var(--yellow);display:block;">5+</span>
+        <span style="color:#aaa;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;">Topic Categories</span>
+      </div>
+      <div>
+        <span style="font-family:'Archivo Black',sans-serif;font-size:3rem;color:var(--yellow);display:block;">100%</span>
+        <span style="color:#aaa;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;">Free Content</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter-section">
+  <div class="container">
+    <div class="newsletter-inner">
+      <div>
+        <h2>SUBSCRIBE TODAY FOR<br>SMARTER LEARNING</h2>
+        <p style="margin-top:12px;color:#333;max-width:480px;">
+          Join our mailing list for the latest posts and exclusive insights.
+        </p>
+        <form class="newsletter-form newsletter-form-ajax" style="margin-top:24px;">
+          {% csrf_token %}
+          <input type="email" name="email" placeholder="Enter your email" required>
+          <button type="submit" class="btn btn-black">Subscribe</button>
+        </form>
+        <div class="newsletter-msg" style="display:none;margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

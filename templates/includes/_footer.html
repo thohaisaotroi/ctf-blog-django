@@ -1,0 +1,66 @@
+<footer class="footer">
+  <div class="container">
+
+    <div class="footer-grid">
+      <!-- Brand -->
+      <div>
+        <div class="footer-logo">
+          <span class="footer-logo-icon"><i class="fas fa-bolt"></i></span>
+          NEURAL_FEED
+        </div>
+        <p class="footer-desc">
+          A raw, unfiltered feed of cybersecurity, tech deep-dives, and knowledge worth keeping. Built for learners who mean it.
+        </p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+        </div>
+      </div>
+
+      <!-- Company -->
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="/about/"><i class="fas fa-chevron-right fa-xs"></i> About Us</a></li>
+          <li><a href="/blog/"><i class="fas fa-chevron-right fa-xs"></i> Blog</a></li>
+          <li><a href="/contact/"><i class="fas fa-chevron-right fa-xs"></i> Contact Us</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="/auth/profile/"><i class="fas fa-chevron-right fa-xs"></i> My Profile</a></li>
+          {% else %}
+          <li><a href="/auth/register/"><i class="fas fa-chevron-right fa-xs"></i> Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <!-- Topics -->
+      <div class="footer-col">
+        <h5>Topics</h5>
+        <ul>
+          <li><a href="/blog/?category=cybersecurity"><i class="fas fa-chevron-right fa-xs"></i> Cybersecurity</a></li>
+          <li><a href="/blog/?category=web"><i class="fas fa-chevron-right fa-xs"></i> Web Development</a></li>
+          <li><a href="/blog/?category=security"><i class="fas fa-chevron-right fa-xs"></i> Security Research</a></li>
+          <li><a href="/blog/?category=tools"><i class="fas fa-chevron-right fa-xs"></i> Tools & Tips</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#"><i class="fas fa-envelope"></i> hello@neural.feed</a></li>
+          <li><a href="#"><i class="fas fa-map-marker-alt"></i> Hanoi, Vietnam</a></li>
+          <li><a href="/blog/"><i class="fas fa-rss"></i> Blog / Articles</a></li>
+          <li><a href="/search/"><i class="fas fa-search"></i> Search Posts</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; {% now "Y" %} NEURAL_FEED. All rights reserved.</span>
+      <span>Built with Django &amp; Neo-Brutalism.</span>
+    </div>
+
+  </div>
+</footer>

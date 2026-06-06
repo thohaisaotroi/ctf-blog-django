@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile: {{ profile_user.username }} — NEURAL_FEED{% endblock %}
+
+{% block content %}
+
+<div class="page-hero" style="background:var(--purple);">
+  <h1>{{ profile_user.username|upper }}</h1>
+  <div class="breadcrumb">
+    <a href="/">Home</a> <i class="fas fa-arrow-right fa-xs"></i> <span>Profile</span>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="profile-layout">
+
+      <!-- Profile card -->
+      <div>
+        <div style="background:var(--white);border:var(--border3);box-shadow:var(--shadow6);border-radius:var(--radius);padding:32px;text-align:center;">
+          <div style="width:80px;height:80px;background:var(--purple);border:var(--border3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black',sans-serif;font-size:2rem;margin:0 auto 20px;">
+            {{ profile_user.username|first|upper }}
+          </div>
+          <h3 style="margin-bottom:6px;">{{ profile_user.username }}</h3>
+          <p style="font-size:0.82rem;color:#888;margin-bottom:20px;">{{ profile_user.email }}</p>
+          <span class="tag {% if profile_user.is_staff %}tag-teal{% else %}tag-purple{% endif %}">
+            {% if profile_user.is_staff %}Admin{% else %}Member{% endif %}
+          </span>
+          <div style="margin-top:20px;padding-top:20px;border-top:var(--border);font-size:0.82rem;color:#888;">
+            Joined {{ profile_user.date_joined|date:"M Y" }}
+          </div>
+        </div>
+        <a href="/auth/password-change/" class="btn btn-outline mt-16" style="width:100%;justify-content:center;">
+          <i class="fas fa-key"></i> Change Password
+        </a>
+        <a href="/auth/logout/" class="btn btn-black mt-8" style="width:100%;justify-content:center;">
+          <i class="fas fa-sign-out-alt"></i> Log Out
+        </a>
+      </div>
+
+      <!-- Activity -->
+      <div>
+        <!-- Comments -->
+        <h3 style="margin-bottom:20px;">MY COMMENTS</h3>
+        {% if comments %}
+        <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:40px;">
+          {% for comment in comments %}
+          <div class="comment-box">
+            <div class="comment-meta" style="margin-bottom:8px;">
+              <a href="/blog/{{ comment.post.slug }}/" style="font-weight:700;font-size:0.85rem;text-transform:uppercase;">
+                {{ comment.post.title|truncatechars:55 }}
+              </a>
+              {% if comment.created_at %}
+              <span class="text-muted" style="font-size:0.75rem;">{{ comment.created_at|date:"d M Y" }}</span>
+              {% endif %}
+            </div>
+            <p style="font-size:0.9rem;">{{ comment.content|truncatewords:25 }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="color:#888;margin-bottom:40px;">No comments yet.</p>
+        {% endif %}
+
+        <!-- Liked posts -->
+        <h3 style="margin-bottom:20px;">LIKED POSTS</h3>
+        {% if likes %}
+        <div class="posts-grid posts-grid-2">
+          {% for like in likes %}
+          <a href="/blog/{{ like.post.slug }}/" class="card card-shadow" style="text-decoration:none;color:inherit;">
+            {% if like.post.cover_image %}
+            <img class="card-img" src="{{ like.post.cover_image }}" alt="{{ like.post.title }}">
+            {% else %}
+            <div class="no-post-img"><i class="fas fa-heart" style="color:var(--red);"></i></div>
+            {% endif %}
+            <div class="card-body">
+              <h4 class="card-title">{{ like.post.title|truncatechars:55 }}</h4>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="color:#888;">No liked posts yet. <a href="/blog/" style="font-weight:700;">Browse the blog →</a></p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

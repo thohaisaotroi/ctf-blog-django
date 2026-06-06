@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Posts List — NEURAL_FEED{% endblock %}
+
+{% block content %}
+
+
+<div class="page-hero" style="background:var(--black);color:var(--white);">
+  <h1 style="color:var(--yellow);">[ POSTS_LIST ]</h1>
+  <p style="margin-top:10px;font-family:monospace;font-size:0.88rem;color:#aaa;">
+    Sort posts by any field — try different values
+  </p>
+  <div class="breadcrumb" style="color:#888;">
+    <a href="/" style="color:#aaa;">Home</a>
+    <i class="fas fa-arrow-right fa-xs"></i>
+    <span>Posts</span>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- SQL Error display -->
+    {% if sql_error %}
+    <div class="alert alert-error mb-24" style="font-family:monospace;font-size:0.82rem;word-break:break-all;">
+      <strong>SQL ERROR:</strong><br>{{ sql_error }}
+    </div>
+    {% endif %}
+
+    <!-- Sort form -->
+    <div style="background:var(--white);border:var(--border3);box-shadow:var(--shadow);border-radius:var(--radius);padding:20px;margin-bottom:32px;font-family:monospace;">
+      <form method="GET" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <label style="font-weight:700;font-size:0.85rem;">?sort=</label>
+        <input type="text" name="sort" value="{{ sort_param }}"
+               class="form-control" style="font-family:monospace;max-width:360px;"
+               placeholder="created_at, -views, title ...">
+        {% if active_category %}
+        <input type="hidden" name="category" value="{{ active_category }}">
+        {% endif %}
+        <button type="submit" class="btn btn-yellow">Execute</button>
+      </form>
+    </div>
+
+    <!-- Category filter -->
+    {% if categories %}
+    <div class="category-list mb-32">
+      <a href="/posts/" class="cat-chip {% if not active_category %}active{% endif %}">All</a>
+      {% for cat in categories %}
+      <a href="/posts/?category={{ cat.slug }}&sort={{ sort_param }}" class="cat-chip {% if active_category == cat.slug %}active{% endif %}">
+        {{ cat.name }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Posts table -->
+    {% if posts %}
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Views</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for post in posts %}
+          <tr style="cursor:pointer;" data-href="/blog/{{ post.slug }}/">
+            <td style="font-family:monospace;">{{ post.id }}</td>
+            <td><a href="/blog/{{ post.slug }}/" style="font-weight:700;text-transform:uppercase;font-size:0.85rem;">{{ post.title|truncatechars:60 }}</a></td>
+            <td>{{ post.author.username }}</td>
+            <td><span class="tag tag-purple">{{ post.category.name }}</span></td>
+            <td><i class="fas fa-eye"></i> {{ post.views }}</td>
+            <td style="font-size:0.8rem;color:#888;">
+              {% if post.created_at %}{{ post.created_at|date:"d M Y" }}{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    <div style="text-align:center;padding:60px;background:var(--white);border:var(--border);border-radius:var(--radius);">
+      <p style="color:#888;">No posts found.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

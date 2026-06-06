@@ -1,0 +1,51 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ctf_blog
+      MYSQL_USER: ctf_user
+      MYSQL_PASSWORD: ctf_pass
+    ports:
+      - "3306:3306"
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./payment_db_init.sql:/docker-entrypoint-initdb.d/01_payment_db.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "ctf_user", "-pctf_pass"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+  web:
+    build: .
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate --run-syncdb &&
+             python manage.py seed_data &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-key-change-me}
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-ctf_blog}
+      DB_USER: ${DB_USER:-ctf_user}
+      DB_PASSWORD: ${DB_PASSWORD:-ctf_pass}
+      DB_PORT: "3306"
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-example@gmail.com}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-your-app-password}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-"Project <example@gmail.com>"}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*$py.class
+
+# Django
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Archives
+*.tar.gz
+*.zip
+*.rar
+
+# IDEs
+.vscode/
+.idea/
+.claude/
+
+# Environment & secrets
+.env
+.env.*
+venv/
+env/
+
+# Database init — chứa credentials, không commit
+init.sql
+
+# sqlmap output
+/tmp/sqlmap_ctf_dump/

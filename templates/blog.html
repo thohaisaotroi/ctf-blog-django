@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Blog — NEURAL_FEED{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero -->
+<div class="page-hero">
+  <h1>OUR BLOG</h1>
+  <div class="breadcrumb">
+    <a href="/">Home</a>
+    <i class="fas fa-arrow-right fa-xs"></i>
+    <span>Our Blog</span>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Section header -->
+    <div class="section-header mb-48">
+      <h2>EXPLORE FRESH<br>INSIGHTS OUR BLOG</h2>
+      <p class="desc">Discover expert tips, career advice, and in-depth tutorials to help you grow your skills in today's fast-paced world.</p>
+    </div>
+
+    <!-- Category filter -->
+    {% if categories %}
+    <div class="category-list mb-32">
+      <a href="/blog/" class="cat-chip {% if not active_category %}active{% endif %}">All</a>
+      {% for cat in categories %}
+      <a href="/blog/?category={{ cat.slug }}" class="cat-chip {% if active_category == cat.slug %}active{% endif %}">
+        {{ cat.name }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Posts -->
+    {% if posts %}
+    <div class="posts-grid">
+      {% for post in posts %}
+      <a href="/blog/{{ post.slug }}/" class="card card-shadow" style="text-decoration:none;color:inherit;">
+        {% if post.cover_image %}
+        <img class="card-img" src="{{ post.cover_image }}" alt="{{ post.title }}" loading="lazy">
+        {% else %}
+        <div class="no-post-img"><i class="fas fa-file-alt"></i></div>
+        {% endif %}
+        <div class="card-body">
+          <div class="card-meta">
+            {% if post.created_at %}<span>{{ post.created_at|date:"d M Y" }}</span>{% endif %}
+            <span class="text-muted">&bull;</span>
+            <span>{{ post.author }}</span>
+          </div>
+          <h4 class="card-title">{{ post.title }}</h4>
+          <p class="card-excerpt">{{ post.excerpt|default:"Explore this in-depth article for practical insights and expert analysis." }}</p>
+          {% if post.tags %}
+          <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;">
+            {% for tag in post.tags|slice:":3" %}
+            <span class="tag tag-purple" style="font-size:0.68rem;padding:2px 8px;">#{{ tag.name }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+      {% if page > 1 %}
+      <a href="?page={{ page|add:'-1' }}{% if active_category %}&category={{ active_category }}{% endif %}" class="page-btn">
+        <i class="fas fa-chevron-left"></i>
+      </a>
+      {% endif %}
+
+      {% for p in page_range %}
+      <a href="?page={{ p }}{% if active_category %}&category={{ active_category }}{% endif %}"
+         class="page-btn {% if p == page %}active{% endif %}">{{ p }}</a>
+      {% endfor %}
+
+      {% if page < total_pages %}
+      <a href="?page={{ page|add:'1' }}{% if active_category %}&category={{ active_category }}{% endif %}" class="page-btn">
+        <i class="fas fa-chevron-right"></i>
+      </a>
+      {% endif %}
+    </div>
+    <p style="text-align:center;margin-top:16px;font-size:0.82rem;color:#888;">
+      Showing {{ posts|length }} of {{ total }} posts
+    </p>
+    {% endif %}
+
+    {% else %}
+    <div style="text-align:center;padding:80px 0;">
+      <i class="fas fa-inbox" style="font-size:3rem;color:#ccc;margin-bottom:16px;display:block;"></i>
+      <h3 style="margin-bottom:12px;">No posts found</h3>
+      <p style="color:#888;">Try a different category or check back soon.</p>
+      <a href="/blog/" class="btn btn-yellow mt-24">View All Posts</a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter-section">
+  <div class="container">
+    <div class="newsletter-inner">
+      <div>
+        <h2>STAY UPDATED,<br>KEEP LEARNING</h2>
+        <p style="margin-top:12px;color:#333;max-width:480px;">
+          Discover expert tips, career advice, and in-depth tutorials to help you grow your skills in today's fast-paced world.
+        </p>
+        <form class="newsletter-form newsletter-form-ajax" style="margin-top:24px;">
+          {% csrf_token %}
+          <input type="text" name="name" placeholder="Your name (optional)">
+          <input type="email" name="email" placeholder="Enter your email" required>
+          <button type="submit" class="btn btn-black">Subscribe</button>
+        </form>
+        <div class="newsletter-msg" style="display:none;margin-top:12px;"></div>
+      </div>
+      <div class="newsletter-img">
+        <i class="fas fa-broadcast-tower" style="font-size:7rem;opacity:0.25;"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

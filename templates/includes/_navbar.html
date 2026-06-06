@@ -1,0 +1,48 @@
+{% load static %}
+<header class="navbar">
+  <div class="navbar-inner">
+
+    <a href="/" class="navbar-logo">
+      <span class="navbar-logo-icon"><i class="fas fa-bolt"></i></span>
+      NEURAL_FEED
+    </a>
+
+    <nav class="navbar-nav">
+      <a href="/" {% if request.path == '/' %}class="active"{% endif %}>Home</a>
+      <a href="/blog/" {% if '/blog' in request.path %}class="active"{% endif %}>Blog</a>
+      <a href="/about/" {% if '/about' in request.path %}class="active"{% endif %}>About</a>
+      <a href="/contact/" {% if '/contact' in request.path %}class="active"{% endif %}>Contact</a>
+    </nav>
+
+    <div class="navbar-right">
+
+      <!-- Search -->
+      <div class="navbar-search-wrap">
+        <button class="icon-btn" id="search-toggle" title="Search">
+          <i class="fas fa-search"></i>
+        </button>
+        <form class="navbar-search-form" id="navbar-search-form" action="/search/" method="GET">
+          <input type="text" name="q" placeholder="Search posts..." autocomplete="off">
+          <button type="submit" class="btn btn-black btn-sm" style="padding:8px 14px;">
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+
+      {% if user.is_authenticated %}
+        <a href="/auth/profile/" class="btn btn-outline btn-sm">
+          <i class="fas fa-user"></i> {{ user.username|truncatechars:10 }}
+        </a>
+        <a href="/auth/logout/" class="btn btn-black btn-sm">Log Out</a>
+      {% else %}
+        <a href="/auth/login/" class="btn btn-outline btn-sm">Log In</a>
+        <a href="/auth/register/" class="btn btn-yellow btn-sm">Get Started</a>
+      {% endif %}
+
+      <button class="icon-btn mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+  </div>
+</header>

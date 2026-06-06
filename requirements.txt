@@ -1,0 +1,5 @@
+Django==3.2.4
+mysqlclient>=2.2.1
+markdown>=3.4
+django-jazzmin==2.6.0
+cloudinary>=1.36.0

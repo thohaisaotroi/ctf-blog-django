@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard — NEURAL_FEED{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-logo">
+      <i class="fas fa-bolt" style="color:var(--yellow);margin-right:8px;"></i>
+      NEURAL_FEED<br>
+      <span style="font-size:0.65rem;color:#666;font-family:'Space Grotesk',sans-serif;font-weight:400;">Admin Panel</span>
+    </div>
+    <nav>
+      <a href="/admin-dashboard/" class="admin-nav-link active">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a>
+      <a href="/admin-post/create/" class="admin-nav-link">
+        <i class="fas fa-plus"></i> New Post
+      </a>
+      <a href="/admin-user/create/" class="admin-nav-link">
+        <i class="fas fa-user-plus"></i> New User
+      </a>
+      <a href="/admin-category/create/" class="admin-nav-link">
+        <i class="fas fa-folder-plus"></i> New Category
+      </a>
+      <div style="border-top:2px solid #222;margin:16px 0;"></div>
+      <a href="/" class="admin-nav-link" target="_blank">
+        <i class="fas fa-globe"></i> View Site
+      </a>
+      <a href="/posts/" class="admin-nav-link" target="_blank">
+        <i class="fas fa-list"></i> Posts
+      </a>
+      <div style="border-top:2px solid #222;margin:16px 0;"></div>
+      <a href="/admin-logout/" class="admin-nav-link">
+        <i class="fas fa-sign-out-alt"></i> Log Out
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <div>
+        <h2 style="font-size:1.4rem;">DASHBOARD</h2>
+        <p style="font-size:0.82rem;color:#888;font-family:monospace;">
+          Logged in as: <strong style="color:var(--black);">{{ request.user.username }}</strong>
+        </p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <a href="/admin-post/create/" class="btn btn-yellow btn-sm">
+          <i class="fas fa-plus"></i> New Post
+        </a>
+        <a href="/manage/" class="btn btn-outline btn-sm" target="_blank">
+          <i class="fas fa-cog"></i> Django Admin
+        </a>
+      </div>
+    </div>
+
+    {% if success_msg %}
+    <div class="alert alert-success auto-dismiss mb-24">
+      <i class="fas fa-check-circle"></i>
+      {% if success_msg == 'post_created' %}Post created successfully!
+      {% elif success_msg == 'post_updated' %}Post updated!
+      {% elif success_msg == 'post_deleted' %}Post deleted.
+      {% elif success_msg == 'user_created' %}User created!
+      {% elif success_msg == 'user_updated' %}User updated!
+      {% elif success_msg == 'user_deleted' %}User deleted.
+      {% elif success_msg == 'cat_created' %}Category created!
+      {% elif success_msg == 'cat_updated' %}Category updated!
+      {% elif success_msg == 'cat_deleted' %}Category deleted.
+      {% else %}{{ success_msg }}{% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Stats -->
+    <div class="stat-cards">
+      <div class="stat-card" style="border-color:var(--yellow);">
+        <span class="stat-num">{{ post_count }}</span>
+        <span class="stat-label"><i class="fas fa-file-alt"></i> Published Posts</span>
+      </div>
+      <div class="stat-card" style="border-color:var(--purple);">
+        <span class="stat-num">{{ draft_count }}</span>
+        <span class="stat-label"><i class="fas fa-edit"></i> Drafts</span>
+      </div>
+      <div class="stat-card" style="border-color:var(--teal);">
+        <span class="stat-num">{{ user_count }}</span>
+        <span class="stat-label"><i class="fas fa-users"></i> Users</span>
+      </div>
+      <div class="stat-card" style="border-color:var(--red);">
+        <span class="stat-num">{{ total_views }}</span>
+        <span class="stat-label"><i class="fas fa-eye"></i> Total Views</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">{{ comment_count }}</span>
+        <span class="stat-label"><i class="fas fa-comments"></i> Comments</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">{{ subscriber_count }}</span>
+        <span class="stat-label"><i class="fas fa-envelope"></i> Subscribers</span>
+      </div>
+    </div>
+
+    <!-- Posts table -->
+    <div style="margin-bottom:32px;">
+      <div class="d-flex justify-between align-center mb-16">
+        <h3 style="font-size:1rem;">ALL POSTS</h3>
+        <a href="/admin-post/create/" class="btn btn-yellow btn-sm">
+          <i class="fas fa-plus"></i> Add Post
+        </a>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Category</th>
+              <th>Views</th>
+              <th>Flag</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in posts %}
+            <tr>
+              <td style="font-family:monospace;font-size:0.8rem;">{{ post.id }}</td>
+              <td style="max-width:240px;">
+                <a href="/blog/{{ post.slug }}/" target="_blank" style="font-weight:700;font-size:0.85rem;text-transform:uppercase;">
+                  {{ post.title|truncatechars:50 }}
+                </a>
+              </td>
+              <td>
+                <span class="tag {% if post.status == 'published' %}tag-teal{% elif post.status == 'draft' %}tag-purple{% else %}tag-white{% endif %}" style="font-size:0.68rem;">
+                  {{ post.status }}
+                </span>
+              </td>
+              <td style="font-size:0.82rem;">{{ post.category_name }}</td>
+              <td style="font-size:0.82rem;"><i class="fas fa-eye"></i> {{ post.views }}</td>
+              <td style="font-family:monospace;font-size:0.72rem;color:var(--red);">
+                {{ post.secret_flag|default:"—" }}
+              </td>
+              <td>
+                <div style="display:flex;gap:6px;">
+                  <a href="/admin-post/edit/{{ post.id }}/" class="btn btn-outline btn-sm" style="padding:5px 10px;">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <form method="POST" action="/admin-post/delete/{{ post.id }}/" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-black btn-sm confirm-delete" style="padding:5px 10px;">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center;color:#888;padding:40px;">No posts yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Users table -->
+    <div style="margin-bottom:32px;">
+      <div class="d-flex justify-between align-center mb-16">
+        <h3 style="font-size:1rem;">USERS</h3>
+        <a href="/admin-user/create/" class="btn btn-yellow btn-sm"><i class="fas fa-plus"></i> Add User</a>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td style="font-family:monospace;font-size:0.8rem;">{{ u.id }}</td>
+            <td style="font-weight:700;">{{ u.username }}</td>
+            <td style="font-size:0.82rem;">{{ u.email }}</td>
+            <td><span class="tag {% if u.role == 'admin' %}tag-teal{% else %}tag-purple{% endif %}" style="font-size:0.68rem;">{{ u.role }}</span></td>
+            <td style="font-size:0.8rem;color:#888;">{{ u.date_joined|date:"d M Y" }}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <a href="/admin-user/edit/{{ u.id }}/" class="btn btn-outline btn-sm" style="padding:5px 10px;"><i class="fas fa-edit"></i></a>
+                <form method="POST" action="/admin-user/delete/{{ u.id }}/" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-black btn-sm confirm-delete" style="padding:5px 10px;"><i class="fas fa-trash"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;color:#888;padding:40px;">No users.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Categories -->
+    <div>
+      <div class="d-flex justify-between align-center mb-16">
+        <h3 style="font-size:1rem;">CATEGORIES</h3>
+        <a href="/admin-category/create/" class="btn btn-yellow btn-sm"><i class="fas fa-plus"></i> Add Category</a>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Slug</th><th>Posts</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for cat in categories %}
+          <tr>
+            <td style="font-family:monospace;font-size:0.8rem;">{{ cat.id }}</td>
+            <td style="font-weight:700;">{{ cat.name }}</td>
+            <td style="font-family:monospace;font-size:0.8rem;color:#888;">{{ cat.slug }}</td>
+            <td>{{ cat.post_count }}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <a href="/admin-category/edit/{{ cat.id }}/" class="btn btn-outline btn-sm" style="padding:5px 10px;"><i class="fas fa-edit"></i></a>
+                <form method="POST" action="/admin-category/delete/{{ cat.id }}/" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-black btn-sm confirm-delete" style="padding:5px 10px;"><i class="fas fa-trash"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center;color:#888;padding:40px;">No categories.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search{% if query %}: {{ query }}{% endif %} — NEURAL_FEED{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <h1>SEARCH{% if query %}: "{{ query }}"{% endif %}</h1>
+  <div class="breadcrumb">
+    <a href="/">Home</a> <i class="fas fa-arrow-right fa-xs"></i> <span>Search</span>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Search bar -->
+    <form action="/search/" method="GET" style="max-width:640px;margin:0 auto 56px;display:flex;gap:12px;">
+      <input type="text" name="q" value="{{ query }}" class="form-control"
+             placeholder="Search articles..." style="font-size:1rem;">
+      <button type="submit" class="btn btn-yellow">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </form>
+
+    {% if query %}
+    <p style="font-size:0.88rem;color:#888;margin-bottom:32px;text-align:center;font-weight:600;text-transform:uppercase;">
+      {{ posts|length }} result{{ posts|length|pluralize }} for "{{ query }}"
+    </p>
+    {% endif %}
+
+    {% if posts %}
+    <div class="posts-grid">
+      {% for post in posts %}
+      <a href="/blog/{{ post.slug }}/" class="card card-shadow" style="text-decoration:none;color:inherit;">
+        {% if post.cover_image %}
+        <img class="card-img" src="{{ post.cover_image }}" alt="{{ post.title }}" loading="lazy">
+        {% else %}
+        <div class="no-post-img"><i class="fas fa-file-alt"></i></div>
+        {% endif %}
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="tag">{{ post.category }}</span>
+            {% if post.created_at %}<span>{{ post.created_at|date:"d M Y" }}</span>{% endif %}
+          </div>
+          <h4 class="card-title">{{ post.title }}</h4>
+          <p class="card-excerpt">{{ post.excerpt|default:"" }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    {% elif query %}
+    <div style="text-align:center;padding:80px 0;">
+      <i class="fas fa-search" style="font-size:3rem;color:#ccc;display:block;margin-bottom:20px;"></i>
+      <h3 style="margin-bottom:12px;">No results for "{{ query }}"</h3>
+      <p style="color:#888;margin-bottom:24px;">Try different keywords or browse all posts.</p>
+      <a href="/blog/" class="btn btn-yellow">Browse All Posts</a>
+    </div>
+
+    {% else %}
+    <div style="text-align:center;padding:80px 0;">
+      <i class="fas fa-search" style="font-size:3rem;color:#ccc;display:block;margin-bottom:20px;"></i>
+      <p style="color:#888;">Type something to search the blog.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

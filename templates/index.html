@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NEURAL_FEED — Tech & Cybersecurity Blog{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+<section class="hero-section">
+  <div class="container">
+    {% if featured %}
+    <div class="hero-grid">
+      <div>
+        <span class="hero-label">&#9733; Featured Post</span>
+        <h1 class="hero-title">{{ featured.title }}</h1>
+        {% if featured.excerpt %}
+        <p class="hero-excerpt">{{ featured.excerpt|truncatewords:30 }}</p>
+        {% endif %}
+        <div class="hero-meta">
+          <span><i class="fas fa-user"></i> {{ featured.author }}</span>
+          <span><i class="fas fa-folder"></i> {{ featured.category }}</span>
+          {% if featured.created_at %}
+          <span><i class="fas fa-calendar"></i> {{ featured.created_at|date:"d M Y" }}</span>
+          {% endif %}
+        </div>
+        <a href="/blog/{{ featured.slug }}/" class="btn btn-yellow btn-lg">
+          Read Article <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="hero-img-wrap">
+        {% if featured.cover_image %}
+        <img src="{{ featured.cover_image }}" alt="{{ featured.title }}">
+        {% else %}
+        <div style="aspect-ratio:4/3;background:rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-newspaper" style="font-size:4rem;color:rgba(0,0,0,0.2);"></i>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <!-- No featured post fallback -->
+    <div style="text-align:center;padding:60px 0 40px;">
+      <span class="hero-label">&#9733; Welcome</span>
+      <h1 class="hero-title">NEURAL_FEED</h1>
+      <p class="hero-excerpt" style="margin:0 auto;">Cybersecurity, tech deep-dives, and knowledge worth keeping.</p>
+      <div style="margin-top:28px;">
+        <a href="/blog/" class="btn btn-yellow btn-lg">Explore Posts <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── Fresh Insights (main featured + sidebar) ───────────────────────────── -->
+{% if posts %}
+<section class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <h2>EXPLORE FRESH<br>INSIGHTS</h2>
+      <p class="desc">Discover expert analysis, practical guides, and in-depth tutorials to grow your skills in today's fast-moving tech landscape.</p>
+    </div>
+
+    <div class="featured-grid">
+
+      <!-- Main first post -->
+      {% with first=posts|first %}
+      <a href="/blog/{{ first.slug }}/" class="featured-card" style="display:block;text-decoration:none;color:inherit;">
+        {% if first.cover_image %}
+        <img class="featured-card-img" src="{{ first.cover_image }}" alt="{{ first.title }}" loading="lazy">
+        {% else %}
+        <div class="no-post-img"><i class="fas fa-newspaper"></i></div>
+        {% endif %}
+        <div class="featured-card-body">
+          <div class="card-meta">
+            <span class="tag">{{ first.category }}</span>
+            {% if first.created_at %}<span>{{ first.created_at|date:"d M Y" }}</span>{% endif %}
+          </div>
+          <h3 class="featured-card-title">{{ first.title }}</h3>
+          {% if first.excerpt %}
+          <p class="card-excerpt">{{ first.excerpt|truncatewords:25 }}</p>
+          {% endif %}
+          <div class="d-flex gap-16 align-center mt-16" style="font-size:0.82rem;font-weight:600;color:#666;">
+            <span><i class="fas fa-eye"></i> {{ first.views }} views</span>
+            <span><i class="fas fa-heart"></i> {{ first.likes }}</span>
+          </div>
+        </div>
+      </a>
+      {% endwith %}
+
+      <!-- Sidebar: remaining posts -->
+      <div class="sidebar-posts">
+        {% for post in posts|slice:"1:5" %}
+        <a href="/blog/{{ post.slug }}/" class="sidebar-post" style="text-decoration:none;color:inherit;">
+          {% if post.cover_image %}
+          <img src="{{ post.cover_image }}" alt="{{ post.title }}" loading="lazy">
+          {% else %}
+          <div style="width:90px;height:70px;background:var(--purple);border:var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-file-alt" style="color:rgba(0,0,0,0.3)"></i>
+          </div>
+          {% endif %}
+          <div class="sidebar-post-content">
+            <p class="sidebar-post-title">{{ post.title|truncatechars:65 }}</p>
+            <span class="sidebar-post-date">
+              {% if post.created_at %}{{ post.created_at|date:"d M Y" }}{% endif %}
+            </span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Stay Updated grid ──────────────────────────────────────────────────── -->
+<section class="section" style="background:var(--white);border-top:var(--border3);border-bottom:var(--border3);">
+  <div class="container">
+
+    <div class="section-header">
+      <h2>STAY UPDATED<br>WITH THE FEED</h2>
+      <p class="desc">Discover expert tips, career advice, and in-depth tutorials to help you grow your skills in today's fast-paced world.</p>
+    </div>
+
+    <div class="posts-grid">
+      {% for post in posts %}
+      <a href="/blog/{{ post.slug }}/" class="card card-shadow" style="text-decoration:none;color:inherit;">
+        {% if post.cover_image %}
+        <img class="card-img" src="{{ post.cover_image }}" alt="{{ post.title }}" loading="lazy">
+        {% else %}
+        <div class="no-post-img"><i class="fas fa-file-alt"></i></div>
+        {% endif %}
+        <div class="card-body">
+          <div class="card-meta">
+            {% if post.created_at %}<span>{{ post.created_at|date:"d M Y" }}</span>{% endif %}
+            <span class="text-muted">&bull;</span>
+            <span>{{ post.author }}</span>
+          </div>
+          <h4 class="card-title">{{ post.title|truncatechars:60 }}</h4>
+          <p class="card-excerpt">{{ post.excerpt|default:"Dive into this article for in-depth analysis and practical insights." }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div style="text-align:center;margin-top:40px;">
+      <a href="/blog/" class="btn btn-black btn-lg">
+        View All Posts <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Newsletter ─────────────────────────────────────────────────────────── -->
+<section class="newsletter-section">
+  <div class="container">
+    <div class="newsletter-inner">
+      <div>
+        <h2>SUBSCRIBE TODAY FOR<br>SMARTER LEARNING</h2>
+        <p style="margin-top:12px;color:#333;max-width:480px;">
+          Join our mailing list to get the latest posts, exclusive insights, and expert tips delivered straight to your inbox.
+        </p>
+        <form class="newsletter-form newsletter-form-ajax" style="margin-top:24px;">
+          {% csrf_token %}
+          <input type="text" name="name" placeholder="Your name (optional)">
+          <input type="email" name="email" placeholder="Enter your email" required>
+          <button type="submit" class="btn btn-black">Subscribe</button>
+        </form>
+        <div class="newsletter-msg" style="display:none;margin-top:12px;"></div>
+      </div>
+      <div class="newsletter-img" style="text-align:center;">
+        <i class="fas fa-satellite-dish" style="font-size:8rem;opacity:0.3;"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if action == 'edit' %}Edit Post{% else %}New Post{% endif %} — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-logo">
+      <i class="fas fa-bolt" style="color:var(--yellow);margin-right:8px;"></i>
+      NEURAL_FEED<br>
+      <span style="font-size:0.65rem;color:#666;font-family:'Space Grotesk',sans-serif;font-weight:400;">Admin Panel</span>
+    </div>
+    <nav>
+      <a href="/admin-dashboard/" class="admin-nav-link">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a>
+      <a href="/admin-post/create/" class="admin-nav-link {% if action == 'create' %}active{% endif %}">
+        <i class="fas fa-plus"></i> New Post
+      </a>
+      <a href="/admin-user/create/" class="admin-nav-link">
+        <i class="fas fa-user-plus"></i> New User
+      </a>
+      <a href="/admin-category/create/" class="admin-nav-link">
+        <i class="fas fa-folder-plus"></i> New Category
+      </a>
+      <div style="border-top:2px solid #222;margin:16px 0;"></div>
+      <a href="/" class="admin-nav-link" target="_blank">
+        <i class="fas fa-globe"></i> View Site
+      </a>
+      <a href="/posts/" class="admin-nav-link" target="_blank">
+        <i class="fas fa-list"></i> Posts
+      </a>
+      <div style="border-top:2px solid #222;margin:16px 0;"></div>
+      <a href="/admin-logout/" class="admin-nav-link">
+        <i class="fas fa-sign-out-alt"></i> Log Out
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <div>
+        <h2 style="font-size:1.4rem;">
+          {% if action == 'edit' %}EDIT POST #{{ post.id }}{% else %}NEW POST{% endif %}
+        </h2>
+        <p style="font-size:0.82rem;color:#888;font-family:monospace;">
+          Content is parsed as <strong>Markdown</strong>
+        </p>
+      </div>
+      <a href="/admin-dashboard/" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error mb-24" style="font-family:monospace;font-size:0.85rem;">
+      <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    <div style="background:var(--white);border:var(--border3);box-shadow:var(--shadow);border-radius:var(--radius);padding:32px;">
+      <form method="POST">
+        {% csrf_token %}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+          <!-- Title -->
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Title <span style="color:var(--red);">*</span></label>
+            <input type="text" name="title" class="form-control"
+                   value="{{ post.title|default:'' }}"
+                   placeholder="Post title..." required autofocus>
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label">Category <span style="color:var(--red);">*</span></label>
+            <select name="category_id" class="form-control" required>
+              <option value="">— Select a category —</option>
+              {% for cat in categories %}
+              <option value="{{ cat.id }}"
+                {% if post.category_id and post.category_id == cat.id %}selected{% endif %}>
+                {{ cat.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-control">
+              <option value="draft"    {% if post.status == 'draft'    %}selected{% endif %}>Draft</option>
+              <option value="published"{% if post.status == 'published'%}selected{% endif %}>Published</option>
+              <option value="private"  {% if post.status == 'private'  %}selected{% endif %}>Private</option>
+            </select>
+          </div>
+
+          <!-- Excerpt -->
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Excerpt</label>
+            <textarea name="excerpt" class="form-control" rows="3"
+                      placeholder="Short summary shown in listings...">{{ post.excerpt|default:'' }}</textarea>
+          </div>
+
+          <!-- Cover Image -->
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Cover Image URL</label>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <input type="url" name="cover_image" id="cover-image-input" class="form-control"
+                     value="{{ post.cover_image|default:'' }}"
+                     placeholder="https://res.cloudinary.com/...">
+              <button type="button" id="upload-btn" class="btn btn-outline btn-sm" style="flex-shrink:0;white-space:nowrap;">
+                <i class="fas fa-cloud-upload-alt"></i> Upload
+              </button>
+              <input type="file" id="upload-file" accept="image/*" style="display:none;">
+            </div>
+            <div id="upload-status" style="display:none;margin-top:8px;font-size:0.82rem;font-family:monospace;"></div>
+            {% if post.cover_image %}
+            <img id="cover-preview" src="{{ post.cover_image }}" alt="Cover"
+                 style="margin-top:12px;max-height:160px;border:var(--border);border-radius:var(--radius);object-fit:cover;">
+            {% else %}
+            <img id="cover-preview" src="" alt="" style="display:none;margin-top:12px;max-height:160px;border:var(--border);border-radius:var(--radius);object-fit:cover;">
+            {% endif %}
+          </div>
+
+          <!-- Tags -->
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Tags <span style="font-weight:400;color:#888;font-size:0.78rem;text-transform:none;">(comma-separated)</span></label>
+            <input type="text" name="tags" class="form-control"
+                   value="{{ post_tags|default:'' }}"
+                   placeholder="security, web, python, tools">
+          </div>
+
+          <!-- Content (Markdown) -->
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Content (Markdown)</label>
+            <textarea name="content" id="content-textarea" class="form-control"
+                      rows="20" placeholder="Write your post in Markdown..."
+                      style="font-family:monospace;font-size:0.88rem;resize:vertical;">{{ post.content|default:'' }}</textarea>
+            <p style="font-size:0.75rem;color:#888;margin-top:6px;">
+              Supports: **bold**, *italic*, `code`, ```blocks```, # headings, - lists, [links](url), > blockquotes
+            </p>
+          </div>
+
+        </div><!-- /grid -->
+
+        <div style="display:flex;gap:12px;margin-top:8px;padding-top:24px;border-top:var(--border);">
+          <button type="submit" class="btn btn-yellow">
+            <i class="fas fa-save"></i>
+            {% if action == 'edit' %}Update Post{% else %}Create Post{% endif %}
+          </button>
+          <a href="/admin-dashboard/" class="btn btn-outline">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Cover image preview on URL input change
+const coverInput  = document.getElementById('cover-image-input');
+const coverPreview = document.getElementById('cover-preview');
+if (coverInput && coverPreview) {
+  coverInput.addEventListener('input', () => {
+    const val = coverInput.value.trim();
+    coverPreview.src = val;
+    coverPreview.style.display = val ? 'block' : 'none';
+  });
+}
+
+// Cloudinary upload
+const uploadBtn  = document.getElementById('upload-btn');
+const uploadFile = document.getElementById('upload-file');
+const statusDiv  = document.getElementById('upload-status');
+if (uploadBtn && uploadFile) {
+  uploadBtn.addEventListener('click', () => uploadFile.click());
+  uploadFile.addEventListener('change', async () => {
+    const file = uploadFile.files[0];
+    if (!file) return;
+    const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+    const data = new FormData();
+    data.append('image', file);
+    statusDiv.style.display = 'block';
+    statusDiv.textContent   = 'Uploading…';
+    statusDiv.style.color   = '#888';
+    try {
+      const res  = await fetch('/admin-upload/image/', { method: 'POST', headers: {'X-CSRFToken': csrfToken}, body: data });
+      const json = await res.json();
+      if (json.url) {
+        coverInput.value       = json.url;
+        coverPreview.src       = json.url;
+        coverPreview.style.display = 'block';
+        statusDiv.textContent  = 'Uploaded: ' + json.url;
+        statusDiv.style.color  = '#0a0a0a';
+      } else {
+        statusDiv.textContent = 'Error: ' + (json.error || 'Upload failed');
+        statusDiv.style.color = '#c00';
+      }
+    } catch(e) {
+      statusDiv.textContent = 'Upload failed: ' + e.message;
+      statusDiv.style.color = '#c00';
+    }
+    uploadFile.value = '';
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if action == 'edit' %}Edit Category{% else %}New Category{% endif %} — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-logo">
+      <i class="fas fa-bolt" style="color:var(--yellow);margin-right:8px;"></i>
+      NEURAL_FEED<br>
+      <span style="font-size:0.65rem;color:#666;font-family:'Space Grotesk',sans-serif;font-weight:400;">Admin Panel</span>
+    </div>
+    <nav>
+      <a href="/admin-dashboard/" class="admin-nav-link">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a>
+      <a href="/admin-post/create/" class="admin-nav-link">
+        <i class="fas fa-plus"></i> New Post
+      </a>
+      <a href="/admin-user/create/" class="admin-nav-link">
+        <i class="fas fa-user-plus"></i> New User
+      </a>
+      <a href="/admin-category/create/" class="admin-nav-link {% if action == 'create' %}active{% endif %}">
+        <i class="fas fa-folder-plus"></i> New Category
+      </a>
+      <div style="border-top:2px solid #222;margin:16px 0;"></div>
+      <a href="/" class="admin-nav-link" target="_blank">
+        <i class="fas fa-globe"></i> View Site
+      </a>
+      <a href="/posts/" class="admin-nav-link" target="_blank">
+        <i class="fas fa-list"></i> Posts
+      </a>
+      <div style="border-top:2px solid #222;margin:16px 0;"></div>
+      <a href="/admin-logout/" class="admin-nav-link">
+        <i class="fas fa-sign-out-alt"></i> Log Out
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <div class="admin-header">
+      <div>
+        <h2 style="font-size:1.4rem;">
+          {% if action == 'edit' %}EDIT CATEGORY #{{ cat.id }}{% else %}NEW CATEGORY{% endif %}
+        </h2>
+        <p style="font-size:0.82rem;color:#888;font-family:monospace;">
+          Slug is used in URLs — lowercase, hyphens only.
+        </p>
+      </div>
+      <a href="/admin-dashboard/" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error mb-24" style="font-family:monospace;font-size:0.85rem;">
+      <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    <div style="max-width:560px;">
+      <div style="background:var(--white);border:var(--border3);box-shadow:var(--shadow);border-radius:var(--radius);padding:32px;">
+        <form method="POST">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label">Name <span style="color:var(--red);">*</span></label>
+            <input type="text" name="name" id="cat-name" class="form-control"
+                   value="{{ cat.name|default:'' }}"
+                   placeholder="Cybersecurity" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Slug <span style="color:var(--red);">*</span></label>
+            <input type="text" name="slug" id="cat-slug" class="form-control"
+                   value="{{ cat.slug|default:'' }}"
+                   placeholder="cybersecurity" required
+                   style="font-family:monospace;">
+            <p style="font-size:0.75rem;color:#888;margin-top:6px;">
+              Used in URL: <code style="background:var(--cream);padding:2px 6px;border-radius:3px;">/blog/?category=<span id="slug-preview">{{ cat.slug|default:'...' }}</span></code>
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"
+                      placeholder="Optional description...">{{ cat.description|default:'' }}</textarea>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:8px;padding-top:24px;border-top:var(--border);">
+            <button type="submit" class="btn btn-yellow">
+              <i class="fas fa-save"></i>
+              {% if action == 'edit' %}Update Category{% else %}Create Category{% endif %}
+            </button>
+            <a href="/admin-dashboard/" class="btn btn-outline">Cancel</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Auto-slug from name on create
+const nameInput    = document.getElementById('cat-name');
+const slugInput    = document.getElementById('cat-slug');
+const slugPreview  = document.getElementById('slug-preview');
+const isCreate     = '{{ action }}' === 'create';
+
+function toSlug(str) {
+  return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+if (nameInput && slugInput && isCreate) {
+  nameInput.addEventListener('input', () => {
+    const s = toSlug(nameInput.value);
+    slugInput.value = s;
+    if (slugPreview) slugPreview.textContent = s || '...';
+  });
+}
+
+if (slugInput && slugPreview) {
+  slugInput.addEventListener('input', () => {
+    slugPreview.textContent = slugInput.value || '...';
+  });
+}
+</script>
+{% endblock %}
